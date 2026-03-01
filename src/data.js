@@ -1,5 +1,5 @@
-// data.js - Loaded as a global variable for simplicity in local environments
-const QUIZ_DATA = [
+// data.js - Exported as a module constant
+export const QUIZ_DATA = [
     // --- Principes et valeurs de la République ---
     {
         "id": 1,

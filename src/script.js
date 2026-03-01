@@ -1,4 +1,5 @@
 // script.js
+import { QUIZ_DATA } from './data.js';
 
 const app = {
     data: [],
