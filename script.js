@@ -271,6 +271,7 @@ const app = {
     handleAnswer: function(selectedIndex) {
         const q = this.currentQuestions[this.currentIndex];
         const isCorrect = selectedIndex === q.correct;
+        const btns = document.getElementById('options-container').querySelectorAll('button');
 
         if (this.currentMode === 'study') {
             // STUDY MODE: Show feedback immediately (Flip Card)
@@ -278,17 +279,42 @@ const app = {
             this.populateBackCard(isCorrect, q);
             document.getElementById('flashcard-inner').classList.add('rotate-y-180');
             
-            if (isCorrect) this.score++;
-            else this.mistakes.push(q);
+            if (!this.isReviewing) {
+                if (isCorrect) this.score++;
+                else this.mistakes.push(q);
+            }
 
         } else {
-            // EXAM MODE: No flip, just move next or wait for timer
+            // EXAM MODE: Highlight selected answer before moving next
             this.stopTimer();
+
+            if (selectedIndex !== -1) {
+                const selectedBtn = btns[selectedIndex];
+                selectedBtn.classList.remove('hover:bg-blue-50', 'hover:border-blue-300', 'border-slate-200');
+                if (isCorrect) {
+                    selectedBtn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700', 'ring-2', 'ring-emerald-200');
+                } else {
+                    selectedBtn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-700', 'ring-2', 'ring-rose-200');
+                    // Also briefly show the correct one
+                    const correctBtn = btns[q.correct];
+                    correctBtn.classList.remove('border-slate-200');
+                    correctBtn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
+                }
+            } else {
+                // Timeout case: just show correct answer
+                const correctBtn = btns[q.correct];
+                correctBtn.classList.remove('border-slate-200');
+                correctBtn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
+            }
+
+            // Disable all buttons to prevent multiple clicks
+            btns.forEach(btn => btn.disabled = true);
+
             if (isCorrect) this.score++;
             else this.mistakes.push(q);
             
-            // Small delay before next question to register click
-            setTimeout(() => this.nextQuestion(), 500);
+            // Small delay before next question to register the feedback
+            setTimeout(() => this.nextQuestion(), 800);
         }
     },
 
